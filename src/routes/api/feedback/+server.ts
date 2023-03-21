@@ -1,17 +1,20 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
-import { Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi, type CreateChatCompletionRequest } from 'openai';
 import { OPENAI_API_KEY } from '$env/static/private';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }: RequestEvent) {
 	const { essay } = await request.json();
 
-	const configuration = new Configuration({
+	const openai_configuration = new Configuration({
 		apiKey: OPENAI_API_KEY,
 	});
-	const openai = new OpenAIApi(configuration);
+	const openai = new OpenAIApi(openai_configuration);
 
-	const completion = await openai.createChatCompletion({
+	const openai_request: CreateChatCompletionRequest = {
 		model: 'gpt-3.5-turbo',
 		messages: [
 			{
@@ -23,8 +26,17 @@ export async function POST({ request }: RequestEvent) {
 				content: 'Give feedback on the following essay: "' + essay + '"',
 			},
 		],
+	};
+
+	const openai_completion = await openai.createChatCompletion(openai_request);
+
+	const feedback = await prisma.feedback.create({
+		data: {
+			essay: essay,
+			feedback: openai_completion.data.choices[0].message?.content,
+			raw_request: openai_request as any,
+			raw_response: openai_completion.data as any,
+		},
 	});
-	console.log(completion.data);
-	console.log(completion.data.choices[0].message?.content);
-	return json(completion.data.choices[0].message?.content);
+	return json({ feedback: feedback.feedback });
 }
