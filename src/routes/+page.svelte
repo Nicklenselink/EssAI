@@ -1,9 +1,3 @@
-<script lang="ts">
-	import { page } from '$app/stores';
-	import { signOut } from '@auth/sveltekit/client';
-</script>
-
-<h1>Welcome {$page.data.session?.user?.name}!</h1>
-{#if $page.data.session}
-	<button on:click={() => signOut()} class="btn">Sign out</button>
-{/if}
+<div class="container mx-auto text-center pt-8">
+	<a href="/essay" class="btn btn-lg">Write an essay!</a>
+</div>
