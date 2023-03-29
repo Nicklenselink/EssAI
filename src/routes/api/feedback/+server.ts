@@ -6,8 +6,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 /** @type {import('./$types').RequestHandler} */
-export async function POST({ request }: RequestEvent) {
-	const { essay } = await request.json();
+export async function POST(event: RequestEvent) {
+	const session = await event.locals.getSession();
+	const { essay } = await event.request.json();
 
 	const openai_configuration = new Configuration({
 		apiKey: OPENAI_API_KEY,
@@ -32,7 +33,12 @@ export async function POST({ request }: RequestEvent) {
 
 	const feedback = await prisma.feedback.create({
 		data: {
-			essay: essay,
+			user: {
+				connect: {
+					name: session?.user?.name ?? undefined,
+				},
+			},
+			essay,
 			feedback: openai_completion.data.choices[0].message?.content,
 			raw_request: openai_request as any,
 			raw_response: openai_completion.data as any,
