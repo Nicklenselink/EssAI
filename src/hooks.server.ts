@@ -37,6 +37,7 @@ async function authentication(input: any) {
 				},
 			}),
 		],
+		trustHost: true,
 	})(input);
 }
 
