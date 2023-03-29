@@ -1,2 +1,9 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { page } from '$app/stores';
+	import { signOut } from '@auth/sveltekit/client';
+</script>
+
+<h1>Welcome {$page.data.session?.user?.name}!</h1>
+{#if $page.data.session}
+	<button on:click={() => signOut()} class="btn">Sign out</button>
+{/if}
