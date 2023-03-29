@@ -3,7 +3,7 @@
 	import { signOut } from '@auth/sveltekit/client';
 </script>
 
-<div class="navbar bg-neutral">
+<div class="navbar bg-base-100 shadow-md">
 	<div class="navbar-start" />
 	<div class="navbar-center">
 		<a href="/" class="btn btn-ghost normal-case text-xl">FAUNA</a>
