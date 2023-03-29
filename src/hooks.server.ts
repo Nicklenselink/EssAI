@@ -2,6 +2,9 @@ import { SvelteKitAuth } from '@auth/sveltekit';
 import Credentials from '@auth/core/providers/credentials';
 import { sequence } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export const handle = sequence(authentication, authorization);
 
@@ -14,21 +17,23 @@ async function authentication(input: any) {
 					username: { label: 'Username', type: 'text' },
 				},
 				async authorize(credentials) {
-					const authResponse = await input.event.fetch('/api/signin', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
+					if (!credentials.username) return null;
+
+					let user = await prisma.user.findUnique({
+						where: {
+							name: credentials.username as string,
 						},
-						body: JSON.stringify(credentials),
 					});
 
-					if (!authResponse.ok) {
-						return null;
-					}
+					if (user) return user as any;
 
-					const user = await authResponse.json();
+					user = await prisma.user.create({
+						data: {
+							name: credentials.username as string,
+						},
+					});
 
-					return user;
+					return user as any;
 				},
 			}),
 		],
