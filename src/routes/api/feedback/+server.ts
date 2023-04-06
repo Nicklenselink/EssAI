@@ -40,8 +40,8 @@ export async function POST(event: RequestEvent) {
 			},
 			essay,
 			feedback: openai_completion.data.choices[0].message?.content,
-			raw_request: openai_request as any,
-			raw_response: openai_completion.data as any,
+			rawRequest: openai_request as any,
+			rawResponse: openai_completion.data as any,
 		},
 	});
 	return json({ feedback: feedback.feedback });
