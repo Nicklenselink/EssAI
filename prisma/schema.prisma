@@ -23,4 +23,5 @@ model Feedback {
   feedback     String?
   rawRequest   Json
   rawResponse  Json?
+  helpful      Boolean?
 }
