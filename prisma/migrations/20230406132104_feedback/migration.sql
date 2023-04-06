@@ -5,8 +5,8 @@ CREATE TABLE "Feedback" (
     "userId" INTEGER NOT NULL,
     "essay" TEXT NOT NULL,
     "feedback" TEXT,
-    "raw_request" JSONB NOT NULL,
-    "raw_response" JSONB,
+    "rawRequest" JSONB NOT NULL,
+    "rawResponse" JSONB,
 
     CONSTRAINT "Feedback_pkey" PRIMARY KEY ("id")
 );
