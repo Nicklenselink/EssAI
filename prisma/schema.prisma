@@ -21,6 +21,6 @@ model Feedback {
   userId       Int
   essay        String
   feedback     String?
-  raw_request  Json
-  raw_response Json?
+  rawRequest   Json
+  rawResponse  Json?
 }
