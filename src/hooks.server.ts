@@ -42,13 +42,11 @@ async function authentication(input: any) {
 }
 
 async function authorization({ event, resolve }: any) {
+	if (!event.url.pathname.startsWith('/api')) return resolve(event);
 	if (event.url.pathname == '/api/signin') return resolve(event);
 
 	const session = await event.locals.getSession();
-	if (!session) {
-		if (event.url.pathname.startsWith('/api')) return new Response(null, { status: 401 });
-		throw redirect(303, '/auth/signin');
-	}
+	if (!session) return new Response(null, { status: 401 });
 
 	return resolve(event);
 }
