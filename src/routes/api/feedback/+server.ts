@@ -44,5 +44,5 @@ export async function POST(event: RequestEvent) {
 			rawResponse: openai_completion.data as any,
 		},
 	});
-	return json({ feedback: feedback.feedback });
+	return json({ feedback: feedback.feedback, id: feedback.id });
 }
