@@ -21,7 +21,7 @@
 	let loading = false;
 
 	function feedback() {
-		messages.push({ text: 'Give me some feedback!', side: 'end', type: 'text' });
+		messages.push({ text: 'Give me some feedback!', type: 'request' });
 		messages = messages;
 		loading = true;
 		const essay = quill.getText();
@@ -37,7 +37,6 @@
 			const { feedback, id } = await response.json();
 			messages.push({
 				text: feedback,
-				side: 'start',
 				id: id,
 				type: 'feedback',
 				helpful: undefined,
@@ -73,8 +72,8 @@
 				<div class="flex-grow border p-2">
 					{#each messages as message}
 						{#if message.type == 'feedback'}
-							<div class="chat chat-{message.side}">
-								<div class="chat-bubble whitespace-pre-line">{message.text}</div>
+							<div class="chat chat-start">
+								<div class="chat-bubble whitespace-pre-wrap">{message.text}</div>
 								<div class="chat-footer">
 									<div class="tooltip tooltip-bottom" data-tip="Helpful">
 										<button
@@ -122,8 +121,8 @@
 								</div>
 							</div>
 						{:else}
-							<div class="chat chat-{message.side}">
-								<div class="chat-bubble whitespace-pre-line">{message.text}</div>
+							<div class="chat chat-end">
+								<div class="chat-bubble whitespace-pre-wrap">{message.text}</div>
 							</div>
 						{/if}
 					{/each}
