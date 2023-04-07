@@ -1,6 +1,6 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { Configuration, OpenAIApi, type CreateChatCompletionRequest } from 'openai';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -11,7 +11,7 @@ export async function POST(event: RequestEvent) {
 	const { essay } = await event.request.json();
 
 	const openai_configuration = new Configuration({
-		apiKey: OPENAI_API_KEY,
+		apiKey: env.OPENAI_API_KEY,
 	});
 	const openai = new OpenAIApi(openai_configuration);
 
