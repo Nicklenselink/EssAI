@@ -1,5 +1,10 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
-import { Configuration, OpenAIApi, type CreateChatCompletionRequest } from 'openai';
+import {
+	Configuration,
+	OpenAIApi,
+	type CreateChatCompletionRequest,
+	type ChatCompletionRequestMessage,
+} from 'openai';
 import { env } from '$env/dynamic/private';
 import { PrismaClient } from '@prisma/client';
 
@@ -15,9 +20,8 @@ export async function POST(event: RequestEvent) {
 	});
 	const openai = new OpenAIApi(openai_configuration);
 
-	const openai_request: CreateChatCompletionRequest = {
-		model: 'gpt-3.5-turbo',
-		messages: [
+	const prompts = [
+		[
 			{
 				role: 'system',
 				content: 'You are a feedback assistant that gives feedback on student essays.',
@@ -27,6 +31,29 @@ export async function POST(event: RequestEvent) {
 				content: 'Give feedback on the following essay: "' + essay + '"',
 			},
 		],
+	];
+
+	const promptIds = [0, 0, 0, 0];
+
+	const feedbacks = await prisma.feedback.findMany({
+		where: {
+			user: {
+				name: session?.user?.name ?? undefined,
+			},
+		},
+	});
+
+	feedbacks.forEach((feedback) => {
+		promptIds.splice(promptIds.indexOf(feedback.promptId), 1);
+	});
+
+	if (!promptIds.length) return json({ feedback: 'Sorry, you have reached your feedback quota.' });
+
+	const promptId = promptIds[Math.floor(Math.random() * promptIds.length)];
+
+	const openai_request: CreateChatCompletionRequest = {
+		model: 'gpt-4-0314',
+		messages: prompts[promptId] as ChatCompletionRequestMessage[],
 	};
 
 	const openai_completion = await openai.createChatCompletion(openai_request);
@@ -39,6 +66,7 @@ export async function POST(event: RequestEvent) {
 				},
 			},
 			essay,
+			promptId,
 			feedback: openai_completion.data.choices[0].message?.content,
 			rawRequest: openai_request as any,
 			rawResponse: openai_completion.data as any,
