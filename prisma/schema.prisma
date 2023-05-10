@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  name      String     @unique
+  feedback  Feedback[]
+}
+
+model Feedback {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int
+  essay        String
+  feedback     String?
+  rawRequest   Json
+  rawResponse  Json?
+  helpful      Boolean?
+}

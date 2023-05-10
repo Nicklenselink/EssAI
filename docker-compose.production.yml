@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - fauna
+    restart: unless-stopped
+
+  fauna:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://postgres:${DATABASE_PASSWORD}@postgres:5432/postgres?schema=public
+      AUTH_SECRET: ${AUTH_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    networks:
+      - fauna
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:alpine
+    command: caddy reverse-proxy --from https://${DOMAIN}:443 --to http://fauna:3000
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - caddy:/data
+    networks:
+      - fauna
+    depends_on:
+      - fauna
+    restart: unless-stopped
+
+volumes:
+  postgres: {}
+  caddy: {}
+
+networks:
+  fauna:
