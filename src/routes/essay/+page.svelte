@@ -5,6 +5,8 @@
 	let editor: Element;
 	let quill: Quill;
 
+	let wordCount = 0;
+
 	onMount(() => {
 		quill = new Quill(editor, {
 			theme: 'snow',
@@ -14,6 +16,11 @@
 					[{ header: 1 }, { header: 2 }],
 				],
 			},
+		});
+
+		quill.on('text-change', () => {
+			const text = quill.getText().trim();
+			wordCount = text.length > 0 ? text.split(/\s+/).length : 0;
 		});
 	});
 
@@ -65,6 +72,7 @@
 		<div class="basis-2/3 p-4 flex flex-col position-fixed">
 			<h1 class="text-2xl mb-2">Write your essay:</h1>
 			<div bind:this={editor} class="flex-grow" />
+			<div>{wordCount} words</div>
 		</div>
 		<div class="basis-1/3 p-4 flex flex-col">
 			<h1 class="text-2xl mb-2">Feedback:</h1>
