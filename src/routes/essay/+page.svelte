@@ -1,6 +1,10 @@
 <script lang="ts">
 	import Quill from 'quill';
 	import { onDestroy, onMount } from 'svelte';
+	import type { PageData } from './$types';
+
+	/** @type {import('./$types').PageData} */
+	export let data: PageData;
 
 	let editor: Element;
 	let quill: Quill;
@@ -27,6 +31,8 @@
 
 			if (source == 'user') deltas.push({ delta: change, clientTime: Date.now() });
 		});
+
+		if (data.essayContents) quill.setContents(data.essayContents);
 
 		metricsInterval = setInterval(saveMetrics, 5000);
 	});
