@@ -19,5 +19,15 @@ export async function load(event: PageServerLoadEvent) {
 		take: 1,
 	});
 
-	return metrics.length ? { essayContents: metrics[0].essayContents } : {};
+	const feedbackThresholdIndex = await prisma.feedback.count({
+		where: {
+			user: {
+				name: session?.user?.name ?? undefined,
+			},
+		},
+	});
+
+	return metrics.length
+		? { essayContents: metrics[0].essayContents, feedbackThresholdIndex }
+		: { feedbackThresholdIndex };
 }

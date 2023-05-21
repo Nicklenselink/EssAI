@@ -14,6 +14,9 @@
 	let deltas: any[] = [];
 	let metricsInterval: any;
 
+	let feedbackThresholdIndex = data.feedbackThresholdIndex;
+	const feedbackThresholds = [100, 200, 300, 400];
+
 	onMount(() => {
 		quill = new Quill(editor, {
 			theme: 'snow',
@@ -28,6 +31,10 @@
 		quill.on('text-change', (change: any, oldContents: any, source: string) => {
 			const text = quill.getText().trim();
 			wordCount = text.length > 0 ? text.split(/\s+/).length : 0;
+			if (wordCount >= feedbackThresholds[feedbackThresholdIndex]) {
+				feedbackThresholdIndex++;
+				feedback();
+			}
 
 			if (source == 'user') deltas.push({ delta: change, clientTime: Date.now() });
 		});
@@ -61,7 +68,8 @@
 	let loading = false;
 
 	function feedback() {
-		messages.push({ text: 'Give me some feedback!', type: 'request' });
+		if (loading) return;
+		// messages.push({ text: 'Give me some feedback!', type: 'request' });
 		messages = messages;
 		loading = true;
 		const essay = quill.getText().trim();
@@ -73,17 +81,20 @@
 			body: JSON.stringify({
 				essay,
 			}),
-		}).then(async (response) => {
-			const { feedback, id } = await response.json();
-			messages.push({
-				text: feedback,
-				id: id,
-				type: 'feedback',
-				helpful: undefined,
+		})
+			.then(async (response) => {
+				const { feedback, id } = await response.json();
+				messages.push({
+					text: feedback,
+					id: id,
+					type: 'feedback',
+					helpful: undefined,
+				});
+				messages = messages;
+			})
+			.finally(() => {
+				loading = false;
 			});
-			messages = messages;
-			loading = false;
-		});
 	}
 
 	function updateUserFeedback(message: any, helpful: boolean) {
@@ -169,22 +180,8 @@
 							</div>
 						{/if}
 					{/each}
-					{#if loading}
-						<div class="flex items-center justify-center">
-							<div
-								class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-							>
-								<span
-									class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-									>Loading...</span
-								>
-							</div>
-						</div>
-					{/if}
 				</div>
-				<div class="pt-2 w-100 mx-auto">
-					<button class="btn" on:click={feedback} disabled={loading}>Give me feedback</button>
-				</div>
+				<div>&nbsp;</div>
 			</div>
 		</div>
 	</div>
