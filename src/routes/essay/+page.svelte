@@ -1,4 +1,5 @@
 <script lang="ts">
+
 	import Quill from 'quill';
 	import { onMount } from 'svelte';
 
@@ -45,6 +46,7 @@
 			loading = false;
 		});
 	}
+
 
 	function updateUserFeedback(message: any, helpful: boolean) {
 		const user_feedback = fetch('api/user_feedback', {
@@ -143,11 +145,25 @@
 				</div>
 				<div class="pt-2 w-100 mx-auto">
 					<button class="btn" on:click={feedback} disabled={loading}>Give me feedback</button>
+					<label for="submit-modal" class="btn">Submit essay</label>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<input type="checkbox" id="submit-modal" class="modal-toggle" />
+				<div class="modal">
+				<div class="modal-box">
+					<h3 class="font-bold text-lg">Are you sure?</h3>
+					<p class="py-4">Please make sure you finished your essay and that it has the minimum amount of words</p>
+					<div class="modal-action">
+						<a class="btn" href="/questionnaire"> I'm sure</a>
+					<label for="submit-modal" class="btn" >I'm not sure</label>
+					
+					</div>
+				</div>
+				</div>
 
 <style>
 	@import 'https://cdn.quilljs.com/1.3.6/quill.snow.css';
