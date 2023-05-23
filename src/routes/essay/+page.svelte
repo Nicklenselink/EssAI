@@ -15,7 +15,7 @@
 	let metricsInterval: any;
 
 	let feedbackThresholdIndex = data.feedbackThresholdIndex;
-	const feedbackThresholds = [100, 200, 300, 400];
+	const feedbackThresholds = [112, 224, 336, 448];
 
 	onMount(() => {
 		quill = new Quill(editor, {
