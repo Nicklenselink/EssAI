@@ -25,4 +25,14 @@ model Feedback {
   rawRequest   Json
   rawResponse  Json?
   helpful      Boolean?
+  under        Int?
+  strweak      Int?
+  specific     Int?
+  improve      Int?
+  confident    Int?
+  practice     Int?
+  well         Int?
+  futimprove   Int?
+  clear        Int?
+  Overall      Int?
 }
