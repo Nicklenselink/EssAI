@@ -91,6 +91,10 @@
 					helpful: undefined,
 				});
 				messages = messages;
+				setTimeout(() => {
+					const scrollingElement = document.scrollingElement || document.body;
+					scrollingElement.scrollTop = scrollingElement.scrollHeight;
+				}, 500);
 			})
 			.finally(() => {
 				loading = false;
