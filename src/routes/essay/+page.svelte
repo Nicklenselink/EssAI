@@ -31,10 +31,7 @@
 		quill.on('text-change', (change: any, oldContents: any, source: string) => {
 			const text = quill.getText().trim();
 			wordCount = text.length > 0 ? text.split(/\s+/).length : 0;
-			if (wordCount >= feedbackThresholds[feedbackThresholdIndex]) {
-				feedbackThresholdIndex++;
-				feedback();
-			}
+			feedbackCheck();
 
 			if (source == 'user') deltas.push({ delta: change, clientTime: Date.now() });
 		});
@@ -45,6 +42,13 @@
 	});
 
 	onDestroy(() => clearInterval(metricsInterval));
+
+	function feedbackCheck() {
+		if (wordCount >= feedbackThresholds[feedbackThresholdIndex] && !loading) {
+			feedbackThresholdIndex++;
+			feedback();
+		}
+	}
 
 	function saveMetrics() {
 		fetch('/api/metrics', {
@@ -98,6 +102,7 @@
 			})
 			.finally(() => {
 				loading = false;
+				feedbackCheck();
 			});
 	}
 
