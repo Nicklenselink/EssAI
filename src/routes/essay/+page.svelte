@@ -1,9 +1,21 @@
 <script lang="ts">
 	import Quill from 'quill';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import type { PageData } from './$types';
+
+	/** @type {import('./$types').PageData} */
+	export let data: PageData;
 
 	let editor: Element;
 	let quill: Quill;
+
+	let wordCount = 0;
+
+	let deltas: any[] = [];
+	let metricsInterval: any;
+
+	let feedbackThresholdIndex = data.feedbackThresholdIndex;
+	const feedbackThresholds = [112, 224, 336, 448];
 
 	onMount(() => {
 		quill = new Quill(editor, {
@@ -15,17 +27,53 @@
 				],
 			},
 		});
+
+		quill.on('text-change', (change: any, oldContents: any, source: string) => {
+			const text = quill.getText().trim();
+			wordCount = text.length > 0 ? text.split(/\s+/).length : 0;
+			if (wordCount >= feedbackThresholds[feedbackThresholdIndex]) {
+				feedbackThresholdIndex++;
+				feedback();
+			}
+
+			if (source == 'user') deltas.push({ delta: change, clientTime: Date.now() });
+		});
+
+		if (data.essayContents) quill.setContents(data.essayContents);
+
+		metricsInterval = setInterval(saveMetrics, 5000);
 	});
+
+	onDestroy(() => clearInterval(metricsInterval));
+
+	function saveMetrics() {
+		fetch('/api/metrics', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				essayText: quill.getText().trim(),
+				essayContents: quill.getContents(),
+				essayLength: quill.getLength(),
+				essayWordCount: wordCount,
+				essayDeltas: deltas,
+				clientTime: Date.now(),
+			}),
+		});
+		deltas = [];
+	}
 
 	let messages: any[] = [];
 	let loading = false;
 
 	function feedback() {
-		messages.push({ text: 'Give me some feedback!', type: 'request' });
+		if (loading) return;
+		// messages.push({ text: 'Give me some feedback!', type: 'request' });
 		messages = messages;
 		loading = true;
-		const essay = quill.getText();
-		const feedback = fetch('/api/feedback', {
+		const essay = quill.getText().trim();
+		fetch('/api/feedback', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -33,21 +81,24 @@
 			body: JSON.stringify({
 				essay,
 			}),
-		}).then(async (response) => {
-			const { feedback, id } = await response.json();
-			messages.push({
-				text: feedback,
-				id: id,
-				type: 'feedback',
-				helpful: undefined,
+		})
+			.then(async (response) => {
+				const { feedback, id } = await response.json();
+				messages.push({
+					text: feedback,
+					id: id,
+					type: 'feedback',
+					helpful: undefined,
+				});
+				messages = messages;
+			})
+			.finally(() => {
+				loading = false;
 			});
-			messages = messages;
-			loading = false;
-		});
 	}
 
 	function updateUserFeedback(message: any, helpful: boolean) {
-		const user_feedback = fetch('api/user_feedback', {
+		fetch('api/user_feedback', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -65,6 +116,7 @@
 		<div class="basis-2/3 p-4 flex flex-col position-fixed">
 			<h1 class="text-2xl mb-2">Write your essay:</h1>
 			<div bind:this={editor} class="flex-grow" />
+			<div>{wordCount} words</div>
 		</div>
 		<div class="basis-1/3 p-4 flex flex-col">
 			<h1 class="text-2xl mb-2">Feedback:</h1>
@@ -128,21 +180,8 @@
 							</div>
 						{/if}
 					{/each}
-					{#if loading}
-						<div class="flex items-center justify-center">
-							<div
-								class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-							>
-								<span
-									class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-									>Loading...</span
-								>
-							</div>
-						</div>
-					{/if}
 				</div>
 				<div class="pt-2 w-100 mx-auto">
-					<button class="btn" on:click={feedback} disabled={loading}>Give me feedback</button>
 					<label for="submit-modal" class="btn">Submit essay</label>
 				</div>
 			</div>

@@ -12,6 +12,7 @@ model User {
   createdAt DateTime   @default(now())
   name      String     @unique
   feedback  Feedback[]
+  metrics   Metric[]
 }
 
 model Feedback {
@@ -35,4 +36,17 @@ model Feedback {
   futimprove   Int?
   clear        Int?
   Overall      Int?
+}
+
+model Metric {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         Int
+  essayText      String
+  essayContents  Json
+  essayLength    Int
+  essayWordCount Int
+  essayDeltas    Json
+  clientTime     DateTime
 }
