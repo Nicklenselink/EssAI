@@ -16,16 +16,29 @@ model User {
 }
 
 model Feedback {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
-  userId      Int
-  promptId    Int
-  essay       String
-  feedback    String?
-  rawRequest  Json
-  rawResponse Json?
-  helpful     Boolean?
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int
+  promptId     Int
+  essay        String
+  feedback     String?
+  rawRequest   Json
+  rawResponse  Json?
+  helpful      Boolean?
+  under        Int?
+  strweak      Int?
+  specific     Int?
+  improve      Int?
+  confident    Int?
+  practice     Int?
+  well         Int?
+  futimprove   Int?
+  clear        Int?
+  overall      Int?
+  personalised String?
+  errors       String?
+  comments     String?
 }
 
 model Metric {

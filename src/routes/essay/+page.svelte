@@ -181,8 +181,24 @@
 						{/if}
 					{/each}
 				</div>
-				<div>&nbsp;</div>
+				<div class="pt-2 w-100 mx-auto">
+					<label for="submit-modal" class="btn">Submit essay</label>
+				</div>
 			</div>
+		</div>
+	</div>
+</div>
+
+<input type="checkbox" id="submit-modal" class="modal-toggle" />
+<div class="modal">
+	<div class="modal-box">
+		<h3 class="font-bold text-lg">Are you sure?</h3>
+		<p class="py-4">
+			Please make sure you finished your essay and that it has the minimum amount of words
+		</p>
+		<div class="modal-action">
+			<a class="btn" href="/questionnaire"> I'm sure</a>
+			<label for="submit-modal" class="btn">I'm not sure</label>
 		</div>
 	</div>
 </div>
