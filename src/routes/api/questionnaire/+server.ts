@@ -5,26 +5,23 @@ const prisma = new PrismaClient();
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST(event: RequestEvent) {
+	const session = await event.locals.getSession();
 	const { answers } = await event.request.json();
 
-	const feedback = await prisma.feedback.update({
-		where: { id: 1 },
-		data: answers[0],
+	const feedbacks = await prisma.feedback.findMany({
+		where: {
+			user: {
+				name: session?.user?.name ?? undefined,
+			},
+		},
 	});
 
-	const feedback1 = await prisma.feedback.update({
-		where: { id: 2 },
-		data: answers[1],
+	feedbacks.forEach(async (feedback, i) => {
+		await prisma.feedback.update({
+			where: { id: feedback.id },
+			data: answers[i],
+		});
 	});
 
-	const feedback2 = await prisma.feedback.update({
-		where: { id: 3 },
-		data: answers[2],
-	});
-
-	const feedback3 = await prisma.feedback.update({
-		where: { id: 4 },
-		data: answers[3],
-	});
 	return json({});
 }
