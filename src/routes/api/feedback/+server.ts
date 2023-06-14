@@ -16,15 +16,18 @@ export async function POST(event: RequestEvent) {
 	const openai = new OpenAIApi(openai_configuration);
 
 	const openai_request: CreateChatCompletionRequest = {
-		model: 'gpt-3.5-turbo',
+		model: 'gpt-4-0314',
 		messages: [
 			{
 				role: 'system',
-				content: 'You are a feedback assistant that gives feedback on student essays.',
+				content: `You are a personalised feedback assistant for essay writing based on Bloom's Taxonomy.`,
 			},
 			{
 				role: 'user',
-				content: 'Give feedback on the following essay: "' + essay + '"',
+				content:
+					`Could you provide me constructive and concise feedback only on the next Bloom's taxonomy level? You do not need to include the levels. The feedback must be 2 bullet points of max 2 sentences each. The essay written so far is:  "` +
+					essay +
+					`"`,
 			},
 		],
 	};
