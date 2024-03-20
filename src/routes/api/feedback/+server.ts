@@ -16,7 +16,7 @@ export async function POST(event: RequestEvent) {
 	const openai = new OpenAIApi(openai_configuration);
 
 	const openai_request: CreateChatCompletionRequest = {
-		model: 'gpt-4-0314',
+		model: 'gpt-4-0613',
 		messages: [
 			{
 				role: 'system',
