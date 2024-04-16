@@ -24,4 +24,5 @@ model Feedback {
   rawRequest   Json
   rawResponse  Json?
   helpful      Boolean?
+  cond         Int
 }

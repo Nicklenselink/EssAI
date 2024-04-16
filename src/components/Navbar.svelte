@@ -6,7 +6,7 @@
 <div class="navbar bg-base-100 shadow-md">
 	<div class="navbar-start" />
 	<div class="navbar-center">
-		<a href="/" class="btn btn-ghost normal-case text-xl">FAUNA</a>
+		<a href="/" class="btn btn-ghost normal-case text-xl">EssAI</a>
 	</div>
 	<div class="navbar-end">
 		<span class="mr-4">Welcome {$page.data.session?.user?.name}!</span>

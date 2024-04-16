@@ -12,7 +12,7 @@ async function authentication(input: any) {
 	return SvelteKitAuth({
 		providers: [
 			Credentials({
-				name: 'FAUNA account',
+				name: 'EssAI account',
 				credentials: {
 					username: { label: 'Username', type: 'text' },
 				},
