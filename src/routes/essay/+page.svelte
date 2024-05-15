@@ -19,6 +19,8 @@
 
 	let messages: any[] = [];
 	let loading = false;
+	let condition = Math.floor(Math.random() * 5);
+
 
 	function feedback() {
 		messages.push({ text: 'Give me some feedback!', type: 'request' });
@@ -32,6 +34,7 @@
 			},
 			body: JSON.stringify({
 				essay,
+				condition
 			}),
 		}).then(async (response) => {
 			const { feedback, id } = await response.json();

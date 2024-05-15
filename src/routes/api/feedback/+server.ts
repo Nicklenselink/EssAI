@@ -5,14 +5,13 @@ import { PrismaClient } from '@prisma/client'; // Importing PrismaClient for int
 
 
 const prisma = new PrismaClient();
-let condition = Math.floor(Math.random() * 6); // Select condition (this is done after you run the command "npm run dev" in the terminal, meaning to get a different condition again, you'll have to restart this)
 
 // Define the POST function to handle HTTP POST requests
 export async function POST(event: RequestEvent) {
     // Retrieve the session information from the event
     const session = await event.locals.getSession();
 
-    const { essay } = await event.request.json();
+    const { essay, condition } = await event.request.json();
 
     
         const openai_requests: CreateChatCompletionRequest[] = [
