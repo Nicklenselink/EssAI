@@ -19,7 +19,7 @@
 
 	let messages: any[] = [];
 	let loading = false;
-	let condition = Math.floor(Math.random() * 5);
+	let condition = Math.floor(Math.random() * 3);
 
 
 	function feedback() {
